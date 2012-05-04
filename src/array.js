@@ -545,7 +545,7 @@ Object.defineProperty(Array.prototype, "count", {
 	}
 });
 
-Object.defineProperty(Array.prototype, "repeat", { 
+Object.defineProperty(Array, "repeat", { 
 	value: function(item, count) {
 		if (count < 0) {
 			throw "Argument out of range 'count'";
@@ -566,7 +566,7 @@ Object.defineProperty(Array.prototype, "empty", {
 	}
 });
 
-Object.defineProperty(Array.prototype, "range", { 
+Object.defineProperty(Array, "range", { 
 	value: function(start, count) {
 		if (count < 0) {
 			throw "Argument out of range 'count'";
