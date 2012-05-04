@@ -50,7 +50,7 @@ Object.defineProperty(Array.prototype, "toLookup", {
 					lookup.map[key] = [];
 					lookup.map[key].push(element);
 				} else {
-					if (lookup.map.contains(element)) {
+					if (lookup.map[key].contains(element)) {
 						throw "Argument exception - adding duplicate element";
 					} else {
 						lookup.map[key].push(element);
@@ -341,7 +341,6 @@ Object.defineProperty(Array.prototype, "distinct", {
 		var filtered = this.select(selector);
 		
 		for(var i = 0; i < filtered.length; i++) {
-			//check seenElements for r
 			var seenElement = false;
 			for(var r = 0; r < result.length; r ++) {
 				if (comparer(filtered[i], result[r])) {
@@ -372,7 +371,7 @@ Object.defineProperty(Array.prototype, "aggregate", {
 Object.defineProperty(Array.prototype, "lastOrNull", { 
 	value: function(predicate) {
 		var foundAny = false;
-		var result = null;
+		var result = defaultValue ? defaultValue : null;
 		for(var i = 0; i < this.length; i++) {
 			if (predicate(this[i])) {
 				foundAny = true;
@@ -411,10 +410,10 @@ Object.defineProperty(Array.prototype, "last", {
 	}
 });
 
-Object.defineProperty(Array.prototype, "singleOrNull", { 
-	value: function(predicate) {
+Object.defineProperty(Array.prototype, "singleOrDefault", { 
+	value: function(predicate, defaultValue) {
 		var foundAny = false;
-		var result = null;
+		var result = defaultValue ? defaultValue : null;
 		for(var i = 0; i < this.length; i++) {
 			if (predicate(this[i])) {
 				if (foundAny) {
@@ -455,13 +454,15 @@ Object.defineProperty(Array.prototype, "single", {
 
 Object.defineProperty(Array.prototype, "firstOrNull", { 
 	value: function(predicate) {
+		var result = defaultValue ? defaultValue : null;
 		for(var i = 0; i < this.length; i++) {
 			if (predicate(this[i])) {
-				return this[i];
+				result = this[i];
+				break;
 			}
 		}
 		
-		return null;
+		return result;
 	}
 });
 
@@ -560,7 +561,7 @@ Object.defineProperty(Array, "repeat", {
 	}
 });
 
-Object.defineProperty(Array.prototype, "empty", { 
+Object.defineProperty(Array, "empty", { 
 	value: function() {
 		return [];
 	}
