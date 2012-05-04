@@ -1,4 +1,4 @@
-Object.defineProperty(Array.prototype, "original", {
+Object.defineProperty(Array.prototype, "base", {
 	value: (function() {
 		function getOwnPropertyDescriptors(object) {
 			var keys = Object.getOwnPropertyNames(object),
@@ -182,7 +182,7 @@ Object.defineProperty(Array.prototype, "join", {
 	value: function(inner, outerKeySelector, innerKeySelector, resultSelector, comparer) {
 		if (!(inner instanceof Array) && !(outerKeySelector instanceof 'function') && !(innerKeySelector instanceof 'function')) {
 			var args = Array.prototype.slice.call(arguments);
-			return Array.prototype.original.join.apply(this, args);
+			return Array.prototype.base.join.apply(this, args);
 		}
 
 		if (!comparer) { comparer = function(a, b) { return a === b; }}
