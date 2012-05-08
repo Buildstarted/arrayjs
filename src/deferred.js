@@ -263,7 +263,7 @@
 		},
 		
 		//skipWhile
-		skipWhile: function(count, predicate) {
+		skipWhile: function(predicate) {
 			var baseDelegate = this.__iterator__;
 			return new ArrayJs.fn.init(function() {
 				if (!predicate) { predicate = function(i, x) { return x < count; }}
@@ -284,7 +284,7 @@
 			return new ArrayJs.fn.init(function() {
 				var index = 0;
 				for(var i in baseDelegate()) {
-					if (index < count) {
+					if (index >= count) {
 						yield i;
 					}
 					
@@ -329,90 +329,80 @@
 		//contains
 		contains: function(value, comparer) {
 			var baseDelegate = this.__iterator__;
-			return new ArrayJs.fn.init(function() {
-				if (!comparer) { comparer = function(a, b) { return a === b; } }
-				for(var i in baseDelegate()) {
-					if (comparer(value, i)) { 
-						return true;
-					}
+			if (!comparer) { comparer = function(a, b) { return a === b; } }
+			for(var i in baseDelegate()) {
+				if (comparer(value, i)) { 
+					return true;
 				}
+			}
 				
-				return false;
-			});
+			return false;
 		},
 		
 		//average
 		average: function(selector) {
 			var baseDelegate = this.__iterator__;
-			return new ArrayJs.fn.init(function() {
-				if (!selector) { selector = function(s) { return s; }}
-				var count = 0;
-				var total = 0;
-				for(var i in baseDelegate()) {
-					var result = selector(i);
-					total += result;
-					count ++;
-				}
+			if (!selector) { selector = function(s) { return s; }}
+			var count = 0;
+			var total = 0;
+			for(var i in baseDelegate()) {
+				var result = selector(i);
+				total += result;
+				count ++;
+			}
 				
-				if (count === 0) {
-					throw "Invalid operation - sequence was empty";
-				}
+			if (count === 0) {
+				throw "Invalid operation - sequence was empty";
+			}
 				
-				return total / count;
-			});
+			return total / count;
 		},
 		
 		//max
 		max: function(selector, comparer) {
 			var baseDelegate = this.__iterator__;
-			return new ArrayJs.fn.init(function() {
-				if (!selector) { selector = function(s) { return s; }}
-				if (!comparer) { comparer = function(a, b) { return a > b; }}
+			if (!selector) { selector = function(s) { return s; }}
+			if (!comparer) { comparer = function(a, b) { return a > b; }}
 		
-				var max = -9007199254740992;
-				for(var i in baseDelegate()) {
-					var result = selector(i);
-					if (comparer(result, max)) {
-						max = result;
-					}
+			var max = -9007199254740992;
+			for(var i in baseDelegate()) {
+				var result = selector(i);
+				if (comparer(result, max)) {
+					max = result;
 				}
+			}
 				
-				return max;
-			});
+			return max;
 		},
 		
 		//min
 		min: function(selector, comparer) {
 			var baseDelegate = this.__iterator__;
-			return new ArrayJs.fn.init(function() {
-				if (!selector) { selector = function(s) { return s; }}
-				if (!comparer) { comparer = function(a, b) { return a < b; }}
+			if (!selector) { selector = function(s) { return s; }}
+			if (!comparer) { comparer = function(a, b) { return a < b; }}
 		
-				var min = 9007199254740992;
-				for(var i in baseDelegate()) {
-					var result = selector(i);
-					if (comparer(result, min)) {
-						min = result;
-					}
+			var min = 9007199254740992;
+			for(var i in baseDelegate()) {
+				var result = selector(i);
+				if (comparer(result, min)) {
+					min = result;
 				}
+			}
 				
-				return min;
-			});
+			return min;
 		},
 		
 		//sum
 		sum: function(selector) {
 			var baseDelegate = this.__iterator__;
-			return new ArrayJs.fn.init(function() {
-				if (!selector) { selector = function(s) { return s; }}
+			if (!selector) { selector = function(s) { return s; }}
 				
-				var sum = 0;
-				for(var i in baseDelegate()) {
-					sum += selector(i);
-				}
+			var sum = 0;
+			for(var i in baseDelegate()) {
+				sum += selector(i);
+			}
 				
-				return sum;
-			});
+			return sum;
 		},
 		
 		//distinct
@@ -433,172 +423,155 @@
 		//aggregate
 		aggregate: function(seed, func, selector) {
 			var baseDelegate = this.__iterator__;
-			return new ArrayJs.fn.init(function() {
-				var current = seed;
-				for(var i in baseDelegate()) {
-					current = func(current, i);
-				}
+			var current = seed;
+			for(var i in baseDelegate()) {
+				current = func(current, i);
+			}
 				
-				return selector(current);
-			});
+			return selector(current);
 		},
 		
 		//lastOrDefault
 		lastOrDefault: function(predicate, defaultValue) {
 			var baseDelegate = this.__iterator__;
-			return new ArrayJs.fn.init(function() {
-				if (!predicate) { predicate = function(s) { return true; }; }
-				var foundAny = false;
-				var result = null;
-				for(var i in baseDelegate()) {
-					if (predicate(i)) {
-						foundAny = true;
-						result = i;
-					}
+			if (!predicate) { predicate = function(s) { return true; }; }
+			var foundAny = false;
+			var result = null;
+			for(var i in baseDelegate()) {
+				if (predicate(i)) {
+					foundAny = true;
+					result = i;
 				}
+			}
 				
-				if (!foundAny) {
-					return defaultValue;
-				}
+			if (!foundAny) {
+				return defaultValue;
+			}
 				
-				return result;
-			});
+			return result;
 		},
 		
 		//last
 		last: function(predicate, defaultValue) {
 			var baseDelegate = this.__iterator__;
-			return new ArrayJs.fn.init(function() {
-				if (!predicate) { predicate = function(s) { return true; }; }
-				var foundAny = false;
-				var result = null;
-				for(var i in baseDelegate()) {
-					if (predicate(i)) {
-						foundAny = true;
-						result = i;
-					}
+			if (!predicate) { predicate = function(s) { return true; }; }
+			var foundAny = false;
+			var result = null;
+			for(var i in baseDelegate()) {
+				if (predicate(i)) {
+					foundAny = true;
+					result = i;
 				}
+			}
 				
-				if (!foundAny) {
-					throw "Invalid operation - no items matched the predicate";
-				}
+			if (!foundAny) {
+				throw "Invalid operation - no items matched the predicate";
+			}
 				
-				return result;
-			});
+			return result;
 		},
 		
 		//singleOrDefault
 		singleOrDefault: function(predicate, defaultValue) {
 			var baseDelegate = this.__iterator__;
-			return new ArrayJs.fn.init(function() {
-				var foundAny = false;
-				var result = null;
-				if (!predicate) { predicate = function(s) { return true; }; }
-				
-				for(var i in baseDelegate()) {
-					if (predicate(i)) {
-						if (foundAny) {
-							throw "Invalid operation - sequence contained multiple matching elements";
-						}
-				
-						foundAny = true;
-						result = i;
+			var foundAny = false;
+			var result = defaultValue ? defaultValue : null;
+			if (!predicate) { predicate = function(s) { return true; }; }
+			
+			for(var i in baseDelegate()) {
+				if (predicate(i)) {
+					if (foundAny) {
+						throw "Invalid operation - sequence contained multiple matching elements";
 					}
+			
+					foundAny = true;
+					result = i;
 				}
-				
-				if (!foundAny) {
-					return defaultValue;
-				}
-				
-				return result;
-			});
+			}
+			
+			return result;
 		},
 		
 		//single
 		single: function(predicate) {
 			var baseDelegate = this.__iterator__;
-			return new ArrayJs.fn.init(function() {
-				var foundAny = false;
-				var result = null;
-				if (!predicate) { predicate = function(s) { return true; }; }
-				
-				for(var i in baseDelegate()) {
-					if (predicate(i)) {
-						if (foundAny) {
-							throw "Invalid operation - sequence contained multiple matching elements";
-						}
-				
-						foundAny = true;
-						result = i;
+			var foundAny = false;
+			var result = null;
+			if (!predicate) { predicate = function(s) { return true; }; }
+
+			for(var i in baseDelegate()) {
+				if (predicate(i)) {
+					if (foundAny) {
+						throw "Invalid operation - sequence contained multiple matching elements";
 					}
+			
+					foundAny = true;
+					result = i;
 				}
+			}
 				
-				if (!foundAny) {
-					throw "Invalid operation - no items matched the predicate";
-				}
+			if (!foundAny) {
+				throw "Invalid operation - no items matched the predicate";
+			}
 				
-				return result;
-			});
+			return result;
 		},
 		
 		//firstOrDefault
 		firstOrDefault: function(predicate, defaultValue) {
+			console.log(defaultValue);
 			var baseDelegate = this.__iterator__;
-			return new ArrayJs.fn.init(function() {
-				if (!predicate) { predicate = function(s) { return true; }; }
+			if (!predicate) { predicate = function(s) { return true; }; }
 				
-				//figure out how to do an empty sequence
-				for(var i in baseDelegate()) {
-					if (predicate(i)) {
-						return i;
-					}
+			//figure out how to do an empty sequence
+			for(var i in baseDelegate()) {
+				if (predicate(i)) {
+					return i;
 				}
-				
-				return defaultValue;
-			});
+			}
+			
+			return defaultValue ? defaultValue : null;
 		},
 		
 		//first
 		first: function(predicate) {
 			var baseDelegate = this.__iterator__;
-			return new ArrayJs.fn.init(function() {
-				if (!predicate) { predicate = function(s) { return true; }; }
-				
-				//figure out how to do an empty sequence
-				for(var i in baseDelegate()) {
-					if (predicate(i)) {
-						return i;
-					}
+			if (!predicate) { predicate = function(s) { return true; }; }
+			
+			//figure out how to do an empty sequence
+			for(var i in baseDelegate()) {
+				if (predicate(i)) {
+					return i;
 				}
-				
-				throw "Invalid operation - no items matched the predicate";
-			});
+			}
+			
+			throw "Invalid operation - no items matched the predicate";
 		},
 		
 		//all
 		all: function(predicate) {
 			var baseDelegate = this.__iterator__;
-			return new ArrayJs.fn.init(function() {
-				if (!predicate) { predicate = function(s) { return true; }; }
-				for(var i in baseDelegate()) {
-					if (!predicate(this[i])) {
-						return false;
-					}
+			if (!predicate) { predicate = function(s) { return true; }; }
+			for(var i in baseDelegate()) {
+				if (!predicate(i)) {
+					return false;
 				}
+			}
 			
-				return true;
-			});
+			return true;
 		},
 		
 		//selectMany
-		selectMany: function(selector) {
+		selectMany: function(collectionSelector, resultSelector) {
 			var baseDelegate = this.__iterator__;
 			return new ArrayJs.fn.init(function() {
-				if (!selector) { throw "Argument null 'selector'"; }
+				if (!collectionSelector) { throw "Argument null 'selector'"; }
+
+				var index = 0;
 				for(var i in baseDelegate()) {
-					var select = selector(i);
+					var select = collectionSelector(i, index++);
 					for(var r in select) {
-						yield selector(select[r]);
+						yield resultSelector(i, select[r]);
 					}
 				}
 			});
@@ -650,38 +623,37 @@
 		//any
 		any: function(predicate) {
 			var baseDelegate = this.__iterator__;
-			return new ArrayJs.fn.init(function() {
-				if (!predicate) { predicate = function(i) { return true; }; }
-				for(var i in baseDelegate()) {
-					if (predicate(this[i])) {
-						return true;
-					}
+			if (!predicate) { predicate = function(i) { return true; }; }
+			for(var i in baseDelegate()) {
+				if (predicate(i)) {
+					return true;
 				}
-			
-				return false;
-			});
+			}
+		
+			return false;
 		},
 		
 		//count
 		count: function(predicate) {
 			var baseDelegate = this.__iterator__;
-			return new ArrayJs.fn.init(function() {
-				if (!predicate) { predicate = function(i) { return true; };	}
-				var count = 0;
-				for(var i in baseDelegate()) {
-					if (predicate(i)) {
-						count ++;
-					}
+			if (!predicate) { predicate = function(i) { return true; };	}
+			var count = 0;
+			for(var i in baseDelegate()) {
+				if (predicate(i)) {
+					count++;
 				}
-				
-				return count;
-			});
+			}
+			
+			return count;
 		},
 		
 		//where
 		where: function(predicate) {
 			var baseDelegate = this.__iterator__;
 			return new ArrayJs.fn.init(function() {
+				if (!predicate) {
+					throw new "Argument null: predicate";
+				}
 				for(var i in baseDelegate()) {
 					if (predicate(i)) {
 						yield i;
