@@ -1,0 +1,304 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
+                    "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<script src="http://code.jquery.com/jquery-latest.js"></script>
+		<link rel="stylesheet" href="http://code.jquery.com/qunit/git/qunit.css" type="text/css" media="screen" />
+		<script type="text/javascript" src="http://code.jquery.com/qunit/git/qunit.js"></script>
+		<script type="text/javascript;version=1.7" src="deferred.js"></script>
+		<script type="text/javascript;version=1.7" src="array.js"></script>
+		<script>
+			$(document).ready(function(){
+				//test("a basic test example", function() {
+				//  ok( true, "this test is fine" );
+				//  var value = "hello";
+				//  equal( value, "hello", "We expect value to be hello" );
+				//});
+				
+				function sequenceEqual(array) {
+					if (array.length != arguments.length - 1) return false;
+					
+					for(var i = 1; i < arguments.length; i++) {
+						if (array[i - 1] !== arguments[i]) return false;
+					}
+					
+					return true;
+				}
+
+				test("where: simple test", function() {
+						ok(true, "passed");
+						var source = [ 1, 3, 4, 2, 8, 1 ];
+						var expected = [ 1, 3, 2, 1];
+						var index = 0;
+						for(var result in source.where(function(x) x < 4)) {
+							equal(expected[index], result, "expected: " + expected[index] + ", found: " + result);
+							index += 1;
+						}
+				});
+				
+				test("where: predicate is null", function() {
+					ok(true, "passed");
+					var source = [1, 2, 3, 4, 5];
+					raises(
+						function() {
+							var result = source.where().toArray();
+						}
+					);
+				});
+
+				test("count: array empty returns 0", function() {
+					var source = [];
+					var count = source.count();
+					equal(count, 0, "Count expected to be 0");
+				});
+				
+				test("count: 1 element returns 1", function() {
+					var source = [ 1 ];
+					var count = source.count();
+					equal(count, 1, "Count expected to be 1");
+				});
+				
+				test("count: x elements returns x", function() {
+					var length = Math.floor(Math.random() * 100);
+					var source = [];
+					for(var i = 0; i < length; i++) {
+						source.push(i);
+					}
+					
+					var count = source.count();
+					equal(count, length, "Count expected to be " + length);
+				});
+				
+				test("any: array empty returns false", function() {
+					var source = [];
+					var result = source.any();
+					equal(result, false, "Empty array expected to return false");
+				});
+				
+				test("any: array with 1 or more elements returns true", function() {
+					var source = [1];
+					var result = source.any();
+					equal(result, true, "Array with elements expected to return true");
+				});
+				
+				test("any: with predicate", function() {
+					var source = [10, 2, 0, 3];
+					var temp = source.select(function(x) 10/x );
+					var result = temp.any(function(y) y > 2 );
+					equal(result, true);
+				});
+
+				test("select: ", function() {
+					var source = [1, 5, 2];
+					var result = source.select(function(x) { return {index: x}; });
+					expect(sequenceEqual(source, { index: 1}, { index: 2 }, { index: 3 }));
+				});
+				
+				//get back to range later since it's a static method
+//				test("range: count < 0 throws exception", function() {
+//					raises(
+//						function() {
+//							var result =  new ArrayJs().range(0, -1);
+//						}
+//					);
+//				});
+				
+//				test("range: start + count - 1 more than max", function() {
+//					raises(
+//						function() {
+//							var result = new ArrayJs([]).range(9007199254740992, 10);
+//						}
+//					);
+//				});
+				
+//				test("range: start + count = array range", function() {
+//					var expectedCount = 10;
+//					var start = 5;
+//					var count = 10;
+//					
+//					var result =  new ArrayJs().range(start, count);
+//					expect(result.length, expectedCount, "Expects 10 elements");
+//				});
+
+				//test("empty", function() { });
+
+				//repeat...
+
+				test("selectMany: ", function() {
+					var source = [3, 5, 20, 15];
+					var result = source.selectMany(function(x, index) { 
+						//collection selector
+						return (x + index + "").split("");
+					}, function(x, item) {
+						//result selector
+						return x + ": " + item;
+					});
+
+					expect(sequenceEqual(result, "3: 3", "5: 6", "20: 2", "20: 2", "15: 1", "15, 8"));
+				});
+
+				test("all", function() {
+					var source = [10, 2, 1, 3];
+					var result = source.all(function(y) y > 0 );
+					equal(result, true);
+				});
+
+				test("all", function() {
+					//failing
+					var source = [10, 2, 1, 3];
+					var result = source.all(function(y) y > 5);
+					equal(result, false);
+				});
+
+				test("first", function() {
+					var source = [0, 1, 2, 3, 4];
+					var first = source.first();
+					equal(first, 0);
+					first = source.first(function(y) y > 2);
+					equal(first, 3);
+					raises(function() {
+						first = source.first(function(y) y > 5);
+					});
+				});
+				
+				test("firstOrDefault", function() {
+					var source = [0, 1, 2, 3, 4];
+					var first = source.firstOrDefault();
+					equal(first, 0);
+					first = source.firstOrDefault(function(y) y > 2);
+					equal(first, 3);
+					first = source.firstOrDefault(function(y) y > 5);
+					equal(first, null);
+				});
+				
+				test("single", function() {
+					var source = [ 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4 ];
+					var single = source.single(function(f) f === 5);
+					equal(single, 5);
+					raises(function() {
+						single = source.single(function(f) f===0);
+					});
+				});
+
+				test("singleOrDefault", function() {
+					var source = [0, 1, 2, 3, 4, 5, 6, 7, 8, 1];
+					var single = source.singleOrDefault(function(f) f === 0);
+					equal(single, 0);
+					
+					raises(function() {
+						single = source.singleOrDefault(function(f) f === 1);
+					});
+					
+					var single = source.singleOrDefault(function(f) f === 10);
+					equal(single, null);
+				});
+
+				test("last", function() {
+					var source = [0, 1, 2, 3, 4];
+					var last = source.last();
+					equal(last, 4);
+					last = source.last(function(y) y < 2);
+					equal(last, 1);
+					raises(function() {
+						last = source.last(function(y) y > 5);
+					});
+				});
+				
+				test("lastOrDefault", function() {
+					var source = [0, 1, 2, 3, 4];
+					var last = source.lastOrDefault();
+					equal(last, 4);
+					last = source.lastOrDefault(function(y) y < 2);
+					equal(last, 1);
+					last = source.lastOrDefault(function(y) y > 5);
+					equal(last, null);
+				});
+								
+				test("aggregate", function() {
+					var source = [ 1, 4, 5 ];
+					var seed = 5;
+					
+					var result = source.aggregate(
+						seed,
+						function(c, v) c * 2 + v,
+						function(r) r + "");
+					equal(result, "57");
+					
+				});
+				
+				test("distinct", function() {
+					var source = [ 1, 2, 3, 3, 2, 2, 3, 1, 0, 5 ];
+					var result = source.distinct().toArray();
+					equal(sequenceEqual(result, 1, 2, 3, 0, 5), true);
+				});
+				
+				test("sum", function() {
+					var source = [1, 2, 3, 4, 5];
+					var result = source.sum();
+					equal(result, 15);
+				});
+				
+				test("min", function() {
+					var source = [1, 2, 3, 4, 5, 6, 7, 8];
+					var result = source.min();
+					equal(result, 1);
+				});
+				
+				test("max", function() {
+					var source = [1, 2, 3, 4, 5, 6, 7, 8];
+					var result = source.max();
+					equal(result, 8);
+				});
+				
+				test("average", function() {
+					var source = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+					var result = source.average();
+					equal(result, 4.5);
+				});
+				
+				test("contains", function() {
+					var itemToLookFor = 10;
+					var source = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+					var result = source.contains(itemToLookFor);
+					equal(result, true);
+					var source = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12];
+					result = source.contains(itemToLookFor);
+					equal(result, false);
+				});
+				
+				test("take", function() {
+					var source = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+					var result = source.take(5).toArray();
+					equal(result.length, 5);
+				});
+				
+				test("takeWhile", function() {
+					var source = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+					var result = source.takeWhile(5, function(t) t > 2 && t < 10).toArray();
+					equal(result.length, 5);
+				});
+				
+				test("skip", function() {
+					var source = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+					var result = source.skip(3).toArray();
+					equal(result.length, 7);
+				});
+				
+				test("skipWhile", function() {
+					var source = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+					var result = source.skipWhile(function(f) f < 4).toArray();
+					equal(result.length, 7);
+				});
+				
+			});
+		</script>
+	</head>
+	<body>
+		<h1 id="qunit-header">QUnit example</h1>
+		<h2 id="qunit-banner"></h2>
+		<div id="qunit-testrunner-toolbar"></div>
+		<h2 id="qunit-userAgent"></h2>
+		<ol id="qunit-tests"></ol>
+		<div id="qunit-fixture">test markup, will be hidden</div>
+	</body>
+ </html>
