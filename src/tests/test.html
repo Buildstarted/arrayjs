@@ -5,8 +5,7 @@
 		<script src="http://code.jquery.com/jquery-latest.js"></script>
 		<link rel="stylesheet" href="http://code.jquery.com/qunit/git/qunit.css" type="text/css" media="screen" />
 		<script type="text/javascript" src="http://code.jquery.com/qunit/git/qunit.js"></script>
-		<script type="text/javascript;version=1.7" src="deferred.js"></script>
-		<script type="text/javascript;version=1.7" src="array.js"></script>
+		<script type="text/javascript" src="../array.js"></script>
 		<script>
 			$(document).ready(function(){
 				//test("a basic test example", function() {
@@ -26,14 +25,14 @@
 				}
 
 				test("where: simple test", function() {
-						ok(true, "passed");
-						var source = [ 1, 3, 4, 2, 8, 1 ];
-						var expected = [ 1, 3, 2, 1];
-						var index = 0;
-						for(var result in source.where(function(x) x < 4)) {
-							equal(expected[index], result, "expected: " + expected[index] + ", found: " + result);
-							index += 1;
-						}
+					ok(true, "passed");
+					var source = [ 1, 3, 4, 2, 8, 1 ];
+					var expected = [ 1, 3, 2, 1];
+					var index = 0;
+					for(var result in source.where(function(x) x < 4)) {
+						equal(expected[index], result, "expected: " + expected[index] + ", found: " + result);
+						index += 1;
+					}
 				});
 				
 				test("where: predicate is null", function() {
