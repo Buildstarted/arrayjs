@@ -1,0 +1,17 @@
+array.js is a javascript implementation of linq. It has support for deferred execution. I am no good at writing.
+
+#method chaining
+    var source = [ 1, 2, 3, 3, 2, 2, 3, 1, 0, 5 ];
+    var result = source
+                       .where(function(x) { return x < 4; })
+                       .skip(2)
+                       .distinct();
+
+#deferred execution
+    var source = [ 1, 2, 3, 3, 2, 2, 3, 1, 0, 5 ];
+    var result = source.where(function(x) { return x < 4; });
+    
+    //it's only executed on toArray() or whenever
+    //the element is enumerated
+    console.log(result.toArray());
+
