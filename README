@@ -1,4 +1,4 @@
-array.js is a javascript implementation of linq. It has support for deferred execution. I am no good at writing.
+array.js is a javascript implementation of linq. It has support for deferred execution for browsers that do not support Javascript 1.7.
 
 #method chaining
     var source = [ 1, 2, 3, 3, 2, 2, 3, 1, 0, 5 ];
